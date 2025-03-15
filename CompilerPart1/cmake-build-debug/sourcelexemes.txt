@@ -1,0 +1,10 @@
+t_main : main
+t_integer : integer
+s_assign : =
+t_number : 5
+s_semi : ;
+t_output : output
+s_lparen : (
+t_or : or
+s_rparen : )
+s_semi : ;
