@@ -6,7 +6,7 @@
 
 LexAnalyzer::LexAnalyzer(istream& infile) {
     string wordPair;
-    while (std::getline(infile, wordPair)) {
+    while (getline(infile, wordPair)) {
         unsigned int pos = wordPair.find(" ");
         string token = wordPair.substr(0, pos);
         string lex = wordPair.substr(pos + 1, wordPair.size());
@@ -30,34 +30,38 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
                 if (lineOfCode[i] >= '0' && lineOfCode[i] <= '9') {
                     int number = 1;
                     while (lineOfCode[i+number] >= '0' && lineOfCode[i+number] <= '9') {
-
+                        ++number;
                     }
                     outfile << "t_number : " << lineOfCode.substr(i, number) << endl;
+                    i += number-1;
                 }
                 else if (lineOfCode[i] == '"') {
                     int number = 1;
                     while (lineOfCode[i+number] != '"') {
-
+                        ++number;
                     }
                     outfile << "t_text : " << lineOfCode.substr(i+1, number-1) << endl;
+                    i += number;
                 }
-
-                map<string, string>::iterator it = tokenmap.begin();
-                bool found = false;
-                while (it != tokenmap.end() && !found) {
-                    if (it->first.size() <= lineOfCode.size() - i) {
-                        //cout << "Test: " << lineOfCode.substr(i, it->first.size()) << endl;
-                        if (it->first == lineOfCode.substr(i, it->first.size())) {
-                            outfile << it->second << " : " << it->first << endl;
-                            found = true;
-                            i += it->first.size() - 1;
+                else {
+                    map<string, string>::iterator it = tokenmap.begin();
+                    bool found = false;
+                    while (it != tokenmap.end() && !found) {
+                        if (it->first.size() <= lineOfCode.size() - i) {
+                            //cout << "Test: " << lineOfCode.substr(i, it->first.size()) << endl;
+                            if (it->first == lineOfCode.substr(i, it->first.size())) {
+                                outfile << it->second << " : " << it->first << endl;
+                                found = true;
+                                i += it->first.size() - 1;
+                            }
                         }
+                        ++it;
                     }
-                    ++it;
-                }
 
-                if (!found) {
-                    cout << lineOfCode << ": " << i << endl;
+                    if (!found) {
+                        // add id code
+                        outfile << "t_id : " << lineOfCode.substr(i, 1) << endl;
+                    }
                 }
             }
         }
