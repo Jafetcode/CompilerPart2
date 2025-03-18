@@ -35,5 +35,11 @@ class LexAnalyzer {
         // If there is an error, the incomplete token/lexeme pairs, as well as
         // an error message have been written to the output file.
         // A success or fail message has printed to the console.
+
+        void lexNum(string lineOfCode);
+
+        void lexString(string lineOfCode);
+
+        void lexID(string lineOfCode);
 };
 #endif //LEXANALYZER_H
