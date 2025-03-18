@@ -1,0 +1,22 @@
+t_main : main
+t_id : i
+t_id : n
+t_id : t
+t_id : e
+t_id : g
+t_id : e
+t_id : r
+t_id : x
+t_id : =
+t_number : 5
+s_semi : ;
+t_id : o
+t_id : u
+t_id : t
+t_id : p
+t_id : u
+t_id : t
+t_id : (
+t_text : hello world
+t_id : )
+s_semi : ;

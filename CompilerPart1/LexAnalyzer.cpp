@@ -18,5 +18,54 @@ LexAnalyzer::LexAnalyzer(istream& infile) {
 // an error message have been written to the output file.
 // A success or fail message has printed to the console.
 void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
+<<<<<<< Updated upstream
 
+=======
+    string lineOfCode;
+    while (getline(infile, lineOfCode)) {
+        for (int i = 0; i < lineOfCode.size(); ++i) {
+            if (lineOfCode[i] != ' ' ) {
+                if (lineOfCode[i] >= '0' && lineOfCode[i] <= '9') {
+                    int number = 1;
+                    while (lineOfCode[i+number] >= '0' && lineOfCode[i+number] <= '9') {
+                        ++number;
+                    }
+                    outfile << "t_number : " << lineOfCode.substr(i, number) << endl;
+                    i += number-1;
+                }
+                else if (lineOfCode[i] == '"') {
+                    int number = 1;
+                    while (lineOfCode[i+number] != '"') {
+                        ++number;
+                        if (i+number >= lineOfCode.size()) {
+                            cout << "" << endl;
+                        }
+                    }
+                    outfile << "t_text : " << lineOfCode.substr(i+1, number-1) << endl;
+                    i += number;
+                }
+                else {
+                    map<string, string>::iterator it = tokenmap.begin();
+                    bool found = false;
+                    while (it != tokenmap.end()) {
+                        if (it->first.size() <= lineOfCode.size() - i) {
+                            //cout << "Test: " << lineOfCode.substr(i, it->first.size()) << endl;
+                            if (it->first == lineOfCode.substr(i, it->first.size())) {
+                                outfile << it->second << " : " << it->first << endl;
+                                found = true;
+                                i += it->first.size() - 1;
+                            }
+                        }
+                        ++it;
+                    }
+
+                    int number = 1;
+                    while (!found) {
+                        if (it->first.size() <= lineOfCode.size() - i) {}
+                    }
+                }
+            }
+        }
+    }
+>>>>>>> Stashed changes
 }
