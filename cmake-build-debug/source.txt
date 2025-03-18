@@ -1,0 +1,11 @@
+/*
+Name: David Llamas
+Description: This source code file demonstrates a simple program written in our defined language.
+It declares a variable, assigns a value, and outputs a message.
+*/
+
+main
+{
+    integer x = 10;
+    output("Lexical Analysis Successful!");
+}

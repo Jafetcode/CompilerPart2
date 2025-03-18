@@ -3,6 +3,6 @@ project(CompilerPart1)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(CompilerPart1 main.cpp
-        LexAnalyzer.cpp
+add_executable(CompilerPart1 ../main.cpp
+        ../LexAnalyzer.cpp
         LexAnalyzer.h)
