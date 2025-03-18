@@ -11,6 +11,8 @@ LexAnalyzer::LexAnalyzer(istream& infile) {
         string token = wordPair.substr(0, pos);
         string lex = wordPair.substr(pos + 1, wordPair.size());
         tokenmap.insert(make_pair(lex, token));
+        lexemes.push_back(lex);
+        tokens.push_back(token);
     }
 }
 
@@ -46,7 +48,7 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
                 else {
                     map<string, string>::iterator it = tokenmap.begin();
                     bool found = false;
-                    while (it != tokenmap.end() && !found) {
+                    while (it != tokenmap.end() && !found) { // fix this later
                         if (it->first.size() <= lineOfCode.size() - i) {
                             //cout << "Test: " << lineOfCode.substr(i, it->first.size()) << endl;
                             if (it->first == lineOfCode.substr(i, it->first.size())) {
@@ -59,8 +61,28 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
                     }
 
                     if (!found) {
-                        // add id code
-                        outfile << "t_id : " << lineOfCode.substr(i, 1) << endl;
+                        if (lineOfCode[i] >= 'A' && lineOfCode[i] <= 'Z' || lineOfCode[i] >= 'a' && lineOfCode[i] <= 'z') {
+                            cout << "Based: " << lineOfCode.substr(i, 1) << endl;
+                        }
+                        else {
+                            cout << "Cringe: "<< lineOfCode.substr(i, 1) << endl;
+                        }
+
+                        int number = 1;
+                        while (!found) {
+                            it = tokenmap.begin();
+                            while (it != tokenmap.end() && !found) {
+                                if (it->first.size() <= 1) {
+                                    if (lineOfCode.at(i+number) == ' ' || it->first == lineOfCode.substr(i+number, 1)) {
+                                        outfile << "t_id : " << lineOfCode.substr(i, number) << endl;
+                                        found = true;
+                                        i += number - 1;
+                                    }
+                                }
+                                ++it;
+                            }
+                            number++;
+                        }
                     }
                 }
             }
