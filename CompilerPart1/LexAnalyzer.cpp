@@ -16,6 +16,44 @@ LexAnalyzer::LexAnalyzer(istream& infile) {
     }
 }
 
+// checks if a lexeme is surrounded by valid characters or lexemes.
+bool LexAnalyzer::validChecker(int start, int end, string lineOfCode) {
+    bool lValid = false;
+    bool rValid = false;
+    map<string, string>::iterator it = tokenmap.begin();
+
+    if (start < 1) {
+        lValid = true;
+    }
+    else if (lineOfCode[start-1] == ' ') {
+        lValid = true;
+    }
+    if (end+1 >= lineOfCode.size()) {
+        rValid = true;
+    }
+    else if (lineOfCode[end+1] == ' ') {
+        rValid = true;
+    }
+    //cout << "Testtest: " << lValid << rValid << endl;
+
+    while (it != tokenmap.end() && !(lValid && rValid)) {
+        if (it->second.at(0) == 's') {
+            if (!lValid) {
+                if (it->first == lineOfCode.substr(start - it->first.size(), it->first.size())) {
+                    lValid = true;
+                }
+            }
+            if (!rValid) {
+                if (it->first == lineOfCode.substr(end+1, it->first.size())) {
+                    rValid = true;
+                }
+            }
+        }
+        ++it;
+    }
+    return (lValid && rValid);
+}
+
 // pre: 1st parameter refers to an open text file that contains source
 // code in the language, 2nd parameter refers to an open empty output
 // file
@@ -26,7 +64,8 @@ LexAnalyzer::LexAnalyzer(istream& infile) {
 // A success or fail message has printed to the console.
 void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
     string lineOfCode;
-    while (getline(infile, lineOfCode)) {
+    bool error = false;
+    while (getline(infile, lineOfCode) && !error) {
         for (int i = 0; i < lineOfCode.size(); ++i) {
             if (lineOfCode[i] != ' ') {
                 if (lineOfCode[i] >= '0' && lineOfCode[i] <= '9') {
@@ -34,21 +73,40 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
                     while (lineOfCode[i+number] >= '0' && lineOfCode[i+number] <= '9') {
                         ++number;
                     }
-                    outfile << "t_number : " << lineOfCode.substr(i, number) << endl;
-                    i += number-1;
+                    if (validChecker(i, i+number-1, lineOfCode)) {
+                        outfile << "t_number : " << lineOfCode.substr(i, number) << endl;
+                        i += number-1;
+                    }
+                    else {
+                        cout << "Error in number" << endl;
+                        outfile << "Error in number" << endl;
+                        i += lineOfCode.size();
+                        error = true;
+                    }
                 }
                 else if (lineOfCode[i] == '"') {
                     int number = 1;
-                    while (lineOfCode[i+number] != '"') {
+                    while (lineOfCode[i+number] != '"' &&  i+number < lineOfCode.size()) {
                         ++number;
                     }
-                    outfile << "t_text : " << lineOfCode.substr(i+1, number-1) << endl;
+                    if (i+number > lineOfCode.size() || !validChecker(i, i+number, lineOfCode)) {
+                        cout << "Error in string" << endl;
+                        outfile << "Error in string" << endl;
+                        i += lineOfCode.size();
+                        error = true;
+                    }
+                    else {
+                        outfile << "t_text : " << lineOfCode.substr(i+1, number-1) << endl;
+                    }
+
                     i += number;
                 }
                 else {
-                    map<string, string>::iterator it = tokenmap.begin();
+                    //map<string, string>::iterator it = tokenmap.begin();
+                    map<string, string>::reverse_iterator it = tokenmap.rbegin();
+
                     bool found = false;
-                    while (it != tokenmap.end() && !found) { // fix this later
+                    while (it != tokenmap.rend() && !found) { // fix this later
                         if (it->first.size() <= lineOfCode.size() - i) {
                             //cout << "Test: " << lineOfCode.substr(i, it->first.size()) << endl;
                             if (it->first == lineOfCode.substr(i, it->first.size())) {
@@ -62,26 +120,27 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
 
                     if (!found) {
                         if (lineOfCode[i] >= 'A' && lineOfCode[i] <= 'Z' || lineOfCode[i] >= 'a' && lineOfCode[i] <= 'z') {
-                            cout << "Based: " << lineOfCode.substr(i, 1) << endl;
+                            int number = 1;
+                            while (!found) {
+                                it = tokenmap.rbegin();
+                                while (it != tokenmap.rend() && !found) {
+                                    if (it->first.size() <= 1) {
+                                        if (lineOfCode.at(i+number) == ' ' || it->first == lineOfCode.substr(i+number, 1)) {
+                                            outfile << "t_id : " << lineOfCode.substr(i, number) << endl;
+                                            found = true;
+                                            i += number - 1;
+                                        }
+                                    }
+                                    ++it;
+                                }
+                                number++;
+                            }
                         }
                         else {
-                            cout << "Cringe: "<< lineOfCode.substr(i, 1) << endl;
-                        }
-
-                        int number = 1;
-                        while (!found) {
-                            it = tokenmap.begin();
-                            while (it != tokenmap.end() && !found) {
-                                if (it->first.size() <= 1) {
-                                    if (lineOfCode.at(i+number) == ' ' || it->first == lineOfCode.substr(i+number, 1)) {
-                                        outfile << "t_id : " << lineOfCode.substr(i, number) << endl;
-                                        found = true;
-                                        i += number - 1;
-                                    }
-                                }
-                                ++it;
-                            }
-                            number++;
+                            cout << "Error in id" << endl;
+                            outfile << "Error in id" << endl;
+                            error = true;
+                            i += lineOfCode.size();
                         }
                     }
                 }
