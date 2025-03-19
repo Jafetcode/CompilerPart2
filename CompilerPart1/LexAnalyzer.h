@@ -18,6 +18,7 @@ class LexAnalyzer {
         vector<string> tokens;
 
         // other private methods
+        bool validChecker(int start, int end, string lineOfCode);
 
     public:
         LexAnalyzer(istream& infile);
