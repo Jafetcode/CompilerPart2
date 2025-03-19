@@ -6,7 +6,6 @@
 #include <map>
 #include <vector>
 #include <string>
-
 using namespace std;
 
 // Constructor: Reads token-lexeme pairs from input file
@@ -71,7 +70,6 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
                     processKeywordOrIdentifier(i, lineOfCode, outfile, error);
                 }
             }
-
         }
     }
 }
@@ -150,17 +148,11 @@ void LexAnalyzer::processIdentifier(size_t& i, const string& lineOfCode, ostream
     if (isalpha(lineOfCode[i])) {
         size_t number = 1;
         while (!found) {
-            auto it = tokenmap.rbegin();
-            while (it != tokenmap.rend() && !found) {
-                if (it->first.size() <= 1) {
-                    if (i + number < lineOfCode.size() &&
-                        (lineOfCode[i + number] == ' ' || it->first == lineOfCode.substr(i + number, 1))) {
-                        outfile << "t_id : " << lineOfCode.substr(i, number) << endl;
-                        found = true;
-                        i += number - 1;
-                    }
-                }
-                ++it;
+            if (i + number < lineOfCode.size() && !(isalpha(lineOfCode[i+number]) ||
+            isdigit(lineOfCode[i+number]) || lineOfCode[i+number] == '_')) {
+                outfile << "t_id : " << lineOfCode.substr(i, number) << endl;
+                found = true;
+                i += number - 1;
             }
             number++;
         }
