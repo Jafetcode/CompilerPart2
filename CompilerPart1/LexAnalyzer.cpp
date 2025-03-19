@@ -18,12 +18,11 @@ LexAnalyzer::LexAnalyzer(istream& infile) {
 // an error message have been written to the output file.
 // A success or fail message has printed to the console.
 void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
-<<<<<<< Updated upstream
 
-=======
     string lineOfCode;
     while (getline(infile, lineOfCode)) {
         for (int i = 0; i < lineOfCode.size(); ++i) {
+
             if (lineOfCode[i] != ' ' ) {
                 if (lineOfCode[i] >= '0' && lineOfCode[i] <= '9') {
                     int number = 1;
@@ -38,7 +37,7 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
                     while (lineOfCode[i+number] != '"') {
                         ++number;
                         if (i+number >= lineOfCode.size()) {
-                            cout << "" << endl;
+                            outfile << "Error: Forgot to close the string" << endl;
                         }
                     }
                     outfile << "t_text : " << lineOfCode.substr(i+1, number-1) << endl;
@@ -67,5 +66,5 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
             }
         }
     }
->>>>>>> Stashed changes
+
 }
