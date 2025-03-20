@@ -148,22 +148,26 @@ void LexAnalyzer::processKeywordOrIdentifier(size_t& i, const string& lineOfCode
 
 // PRIVATE: Function to process identifiers (variable names, function names)
 void LexAnalyzer::processIdentifier(size_t& i, const string& lineOfCode, ostream& outfile, bool& error, bool& found) {
-    if (isalpha(lineOfCode[i])) {
+    if (isalpha(lineOfCode[i])) { // Ensure identifier starts with a letter
         size_t number = 1;
-        while (!found) {
-            if (i + number < lineOfCode.size() && !(isalpha(lineOfCode[i+number]) ||
-            isdigit(lineOfCode[i+number]) || lineOfCode[i+number] == '_')) {
-                outfile << "t_id : " << lineOfCode.substr(i, number) << endl;
-                found = true;
-                i += number - 1;
-            }
-            number++;
+
+        // Loop to find the full identifier (letters, digits, underscores)
+        while (i + number < lineOfCode.size() && (isalpha(lineOfCode[i + number]) ||
+        isdigit(lineOfCode[i + number]) || lineOfCode[i + number] == '_')) {
+            ++number;
         }
+
+        // Store the full identifier and print it
+        string identifier = lineOfCode.substr(i, number);
+        outfile << "t_id : " << identifier << endl;
+        found = true;
+        i += number - 1; // Move past the identifier
     }
     else {
-        cout << "Error in id" << endl;
-        outfile << "Error in id" << endl;
+        // ERROR: Not a valid identifier, print error message
+        cout << "Error in identifier: " << lineOfCode[i] << endl;
+        outfile << "Error in identifier: " << lineOfCode[i] << endl;
         error = true;
-        i = lineOfCode.size();
+        i = lineOfCode.size(); // Move to the end of line to prevent infinite loop
     }
 }
