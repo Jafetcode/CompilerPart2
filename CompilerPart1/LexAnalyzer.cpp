@@ -72,6 +72,9 @@ void LexAnalyzer::scanFile(istream& infile, ostream& outfile) {
             }
         }
     }
+    if (!error) {
+        cout << "Success" << endl;
+    }
 }
 
 // PRIVATE: Function to process numbers
